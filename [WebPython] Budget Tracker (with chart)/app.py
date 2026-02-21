@@ -28,17 +28,31 @@ analytics = Analytics(budget)
 def index():
     category = request.args.get("category", "")
     month = request.args.get("month", "")
+    page = int(request.args.get("page", 1))
+    per_page = 10
+    
     expenses = budget.read_all(
         category=category if category else None,
         month=month if month else None
     )
+    expenses = sorted(expenses, key=lambda e: e.date, reverse=True)
     total = sum(e.amount for e in expenses)
+    
+    # Pagination
+    total_pages = (len(expenses) + per_page - 1) // per_page
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_expenses = expenses[start:end]
+    
     return render_template("index.html",
-                           expenses=expenses,
+                           expenses=paginated_expenses,
                            total=total,
                            categories=Expense.CATEGORIES,
                            selected_category=category,
-                           selected_month=month)
+                           selected_month=month,
+                           page=page,
+                           total_pages=total_pages,
+                           total_records=len(expenses))
 
 
 # ─────────────────────────────────────────────

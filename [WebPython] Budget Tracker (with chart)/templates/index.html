@@ -3,28 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>💰 Budget Tracker</title>
+  <title>Sean Pait's Budget Tracker</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
   <style>
-    body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-    .navbar { background: linear-gradient(135deg, #1a1a2e, #16213e); }
-    .navbar-brand { font-weight: 700; font-size: 1.3rem; letter-spacing: .5px; }
-    .card { border: none; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
-    .card-header { border-radius: 16px 16px 0 0 !important; font-weight: 600; }
-    .stat-card { border-left: 5px solid; transition: transform .2s; }
-    .stat-card:hover { transform: translateY(-3px); }
-    .stat-card.total  { border-color: #0d6efd; }
-    .stat-card.count  { border-color: #198754; }
-    .stat-card.avg    { border-color: #fd7e14; }
-    .badge-category { font-size: .75rem; padding: .35em .7em; border-radius: 8px; }
-    .table thead th { background: #1a1a2e; color: #fff; font-weight: 500; border: none; }
-    .table tbody tr:hover { background: #eef2ff; }
-    .btn-action { width: 32px; height: 32px; padding: 0; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; }
-    .chart-img { border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.1); width: 100%; }
-    .progress { height: 10px; border-radius: 8px; }
-    .nav-tabs .nav-link.active { font-weight: 600; color: #0d6efd; }
-    .filter-bar { background: #fff; border-radius: 16px; padding: 1rem 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; min-height: 100vh; }
+    .navbar { background: rgba(102, 126, 234, 0.95); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,.15); backdrop-filter: blur(10px); }
+    .navbar-brand { font-weight: 600; font-size: 1.5rem; letter-spacing: .5px; text-shadow: 0 2px 4px rgba(0,0,0,.2); }
+    .navbar .btn { font-weight: 500; transition: all .3s ease; border: none; }
+    .navbar .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,255,255,.3); }
+    .card { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.08); background: #fff; transition: all .3s ease; overflow: hidden; }
+    .card:hover { box-shadow: 0 8px 30px rgba(0,0,0,.12); }
+    .card-header { border-radius: 0 !important; font-weight: 600; font-size: .95rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(0,0,0,.05); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-card { border: none; border-radius: 16px; transition: all .3s ease; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; transition: width .3s ease; }
+    .stat-card.total::before { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .stat-card.count::before { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .stat-card.avg::before { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .stat-card:hover::before { width: 8px; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.15); }
+    .stat-card .small { font-size: .85rem; font-weight: 500; color: #6c757d; text-transform: uppercase; letter-spacing: .5px; }
+    .stat-card .fs-4 { font-size: 2rem !important; font-weight: 700; }
+    .table tbody tr { transition: all .2s ease; }
+    .fade-in { animation: fadeIn .5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .badge-category { font-size: .75rem; padding: .45em .85em; border-radius: 20px; font-weight: 600; letter-spacing: .3px; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    .table { margin: 0; }
+    .table thead th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; font-weight: 600; border: none; font-size: .85rem; padding: 1rem 1.25rem; text-transform: uppercase; letter-spacing: .5px; }
+    .table tbody td { padding: 1rem 1.25rem; vertical-align: middle; font-size: .9rem; border-bottom: 1px solid #f0f0f0; }
+    .table tbody tr:hover { background: linear-gradient(90deg, #f8f9ff 0%, #fff 100%); transform: scale(1.01); box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .table tbody tr:last-child td { border-bottom: none; }
+    .table tfoot tr { background: #f8f9fa; }
+    .btn-action { width: 36px; height: 36px; padding: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: .9rem; transition: all .2s ease; }
+    .btn-action:hover { transform: translateY(-2px) scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+    .chart-img { border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); width: 100%; transition: transform .3s ease; }
+    .chart-img:hover { transform: scale(1.02); }
+    .progress { height: 10px; border-radius: 10px; background: #e9ecef; overflow: hidden; }
+    .progress-bar { background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); transition: width .6s ease; }
+    .filter-bar { background: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+    .form-label { font-weight: 600; font-size: .85rem; color: #495057; margin-bottom: .6rem; text-transform: uppercase; letter-spacing: .3px; }
+    .form-control, .form-select { border-radius: 10px; border: 2px solid #e9ecef; padding: .7rem 1rem; font-size: .9rem; transition: all .3s ease; }
+    .form-control:focus, .form-select:focus { border-color: #667eea; box-shadow: 0 0 0 .3rem rgba(102,126,234,.15); transform: translateY(-1px); }
+    .btn { border-radius: 10px; font-weight: 600; padding: .7rem 1.5rem; font-size: .9rem; transition: all .3s ease; text-transform: uppercase; letter-spacing: .5px; }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; box-shadow: 0 4px 15px rgba(102,126,234,.4); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,.5); }
+    .btn-outline-secondary:hover { background: #6c757d; color: #fff; }
+    .pagination-btn { min-width: 40px; height: 40px; border: 2px solid #e9ecef; background: #fff; color: #495057; font-weight: 600; transition: all .3s ease; border-radius: 10px; margin: 0 2px; display: inline-flex; align-items: center; justify-content: center; }
+    .pagination-btn:hover:not(.disabled):not(.active) { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,.3); }
+    .pagination-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: #667eea; color: #fff; font-weight: 700; box-shadow: 0 4px 15px rgba(102,126,234,.4); }
+    .pagination-btn.disabled { opacity: .3; cursor: not-allowed; }
+    .view-container { animation: slideIn .6s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .alert { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); font-weight: 500; }
+    .modal-content { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+    .modal-header { border-bottom: 1px solid rgba(0,0,0,.05); border-radius: 20px 20px 0 0; }
+    .modal-footer { border-top: 1px solid rgba(0,0,0,.05); }
+    .bg-light { background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%) !important; }
+    @media (max-width: 768px) {
+      .navbar-brand { font-size: 1.1rem; }
+      .stat-card .fs-4 { font-size: 1.5rem !important; }
+      .table thead th { font-size: .75rem; padding: .75rem .5rem; }
+      .table tbody td { font-size: .8rem; padding: .75rem .5rem; }
+      .btn-action { width: 30px; height: 30px; font-size: .8rem; }
+      .card-header { font-size: .85rem; padding: 1rem; }
+      .filter-bar { padding: 1rem; }
+      .form-label { font-size: .75rem; }
+      .pagination-btn { min-width: 35px; height: 35px; font-size: .85rem; }
+    }
   </style>
 </head>
 <body>
@@ -32,7 +78,7 @@
 <!-- NAVBAR -->
 <nav class="navbar navbar-dark navbar-expand-lg mb-4 py-3">
   <div class="container">
-    <a class="navbar-brand text-white" href="/">💰 Budget Tracker</a>
+    <a class="navbar-brand text-white" href="/">Sean Pait's Budget Tracker</a>
     <div class="d-flex gap-2">
       <a href="/" class="btn btn-sm {{ 'btn-light' if view != 'analytics' else 'btn-outline-light' }}">
         <i class="bi bi-list-ul me-1"></i>Expenses
@@ -58,6 +104,7 @@
        EXPENSES VIEW
   ════════════════════════════════════════ -->
   {% if view != 'analytics' %}
+  <div class="view-container">
 
   <!-- Stat Cards -->
   <div class="row g-3 mb-4">
@@ -70,14 +117,14 @@
     <div class="col-md-4">
       <div class="card stat-card count p-3">
         <div class="text-muted small">Records</div>
-        <div class="fw-bold fs-4 text-success">{{ expenses|length }}</div>
+        <div class="fw-bold fs-4 text-success">{{ total_records }}</div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="card stat-card avg p-3">
         <div class="text-muted small">Average per Record</div>
         <div class="fw-bold fs-4 text-warning">
-          ₱{{ "{:,.2f}".format(total / expenses|length) if expenses else "0.00" }}
+          ₱{{ "{:,.2f}".format(total / total_records) if total_records else "0.00" }}
         </div>
       </div>
     </div>
@@ -88,16 +135,16 @@
     <div class="col-lg-4">
       <div class="card">
         <div class="card-header bg-primary text-white">
-          <i class="bi bi-plus-circle me-2"></i>Add Expense
+          <i class="bi bi-plus-circle me-2"></i>Add New Expense
         </div>
         <div class="card-body">
           <form action="/add" method="POST">
             <div class="mb-3">
-              <label class="form-label fw-semibold">Amount (₱)</label>
-              <input type="number" name="amount" class="form-control" step="0.01" min="0.01" placeholder="0.00" required/>
+              <label class="form-label">Amount (₱)</label>
+              <input type="number" name="amount" class="form-control" step="0.01" min="0.01" placeholder="Enter amount" required/>
             </div>
             <div class="mb-3">
-              <label class="form-label fw-semibold">Category</label>
+              <label class="form-label">Category</label>
               <select name="category" class="form-select" required>
                 {% for cat in categories %}
                 <option value="{{ cat }}">{{ cat }}</option>
@@ -105,11 +152,11 @@
               </select>
             </div>
             <div class="mb-3">
-              <label class="form-label fw-semibold">Description</label>
-              <input type="text" name="description" class="form-control" placeholder="e.g. Grocery run" required/>
+              <label class="form-label">Description</label>
+              <input type="text" name="description" class="form-control" placeholder="Enter description" required/>
             </div>
             <div class="mb-4">
-              <label class="form-label fw-semibold">Date</label>
+              <label class="form-label">Date</label>
               <input type="date" name="date" class="form-control"/>
             </div>
             <button type="submit" class="btn btn-primary w-100">
@@ -124,9 +171,9 @@
     <div class="col-lg-8">
       <!-- Filter Bar -->
       <div class="filter-bar mb-3">
-        <form method="GET" action="/" class="row g-2 align-items-end">
+        <form method="GET" action="/" class="row g-3 align-items-end">
           <div class="col-md-5">
-            <label class="form-label mb-1 fw-semibold small">Filter by Category</label>
+            <label class="form-label">Filter by Category</label>
             <select name="category" class="form-select form-select-sm">
               <option value="">All Categories</option>
               {% for cat in categories %}
@@ -135,7 +182,7 @@
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label mb-1 fw-semibold small">Filter by Month</label>
+            <label class="form-label">Filter by Month</label>
             <input type="month" name="month" class="form-control form-control-sm" value="{{ selected_month }}"/>
           </div>
           <div class="col-md-3 d-flex gap-2">
@@ -148,7 +195,7 @@
       </div>
 
       <!-- Table -->
-      <div class="card">
+      <div class="card" id="expenseTable">
         <div class="card-body p-0">
           {% if expenses %}
           <div class="table-responsive">
@@ -162,13 +209,13 @@
                   <th class="text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="fade-in">
                 {% set cat_colors = {
                   "Food": "success", "Transport": "info", "Housing": "dark",
                   "Health": "danger", "Entertainment": "warning", "Shopping": "primary",
                   "Education": "secondary", "Other": "light text-dark"
                 } %}
-                {% for exp in expenses|sort(attribute='date', reverse=True) %}
+                {% for exp in expenses %}
                 <tr>
                   <td class="text-muted small">{{ exp.date }}</td>
                   <td>
@@ -203,6 +250,46 @@
               </tfoot>
             </table>
           </div>
+          <!-- Pagination -->
+          {% if total_pages > 1 %}
+          <div class="d-flex justify-content-center align-items-center gap-1 p-3 border-top bg-light">
+            <a href="?page={{ page - 1 }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}#expenseTable" 
+               class="btn btn-sm pagination-btn {{ 'disabled' if page == 1 }}">&lsaquo;</a>
+            
+            {% if page > 1 %}
+            <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}#expenseTable" 
+               class="btn btn-sm pagination-btn">1</a>
+            {% endif %}
+            
+            {% if page > 3 %}
+            <span class="px-2 text-muted">&middot;&middot;&middot;</span>
+            {% endif %}
+            
+            {% if page > 2 %}
+            <a href="?page={{ page - 1 }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}#expenseTable" 
+               class="btn btn-sm pagination-btn">{{ page - 1 }}</a>
+            {% endif %}
+            
+            <span class="btn btn-sm pagination-btn active">{{ page }}</span>
+            
+            {% if page < total_pages - 1 %}
+            <a href="?page={{ page + 1 }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}#expenseTable" 
+               class="btn btn-sm pagination-btn">{{ page + 1 }}</a>
+            {% endif %}
+            
+            {% if page < total_pages - 2 %}
+            <span class="px-2 text-muted">&middot;&middot;&middot;</span>
+            {% endif %}
+            
+            {% if page < total_pages %}
+            <a href="?page={{ total_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}#expenseTable" 
+               class="btn btn-sm pagination-btn">{{ total_pages }}</a>
+            {% endif %}
+            
+            <a href="?page={{ page + 1 }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_month %}&month={{ selected_month }}{% endif %}#expenseTable" 
+               class="btn btn-sm pagination-btn {{ 'disabled' if page == total_pages }}">&rsaquo;</a>
+          </div>
+          {% endif %}
           {% else %}
           <div class="text-center py-5 text-muted">
             <i class="bi bi-inbox fs-1"></i>
@@ -213,17 +300,19 @@
       </div>
     </div>
   </div>
+  </div>
 
   <!-- ════════════════════════════════════════
        ANALYTICS VIEW
   ════════════════════════════════════════ -->
   {% else %}
+  <div class="view-container">
 
   <!-- Month Filter -->
   <div class="filter-bar mb-4">
-    <form method="GET" action="/analytics" class="row g-2 align-items-end">
+    <form method="GET" action="/analytics" class="row g-3 align-items-end">
       <div class="col-md-4">
-        <label class="form-label fw-semibold small mb-1">Filter by Month</label>
+        <label class="form-label">Filter by Month</label>
         <input type="month" name="month" class="form-control form-control-sm" value="{{ selected_month }}"/>
       </div>
       <div class="col-auto d-flex gap-2">
@@ -315,24 +404,25 @@
   {% endif %}
 
   {% endif %}
+  </div>
 </div>
 
 <!-- EDIT MODAL -->
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow rounded-4">
-      <div class="modal-header bg-warning">
+      <div class="modal-header bg-warning text-dark">
         <h5 class="modal-title fw-bold"><i class="bi bi-pencil me-2"></i>Edit Expense</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="editForm" method="POST">
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label fw-semibold">Amount (₱)</label>
+            <label class="form-label">Amount (₱)</label>
             <input type="number" name="amount" id="editAmount" class="form-control" step="0.01" required/>
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold">Category</label>
+            <label class="form-label">Category</label>
             <select name="category" id="editCategory" class="form-select">
               {% for cat in categories %}
               <option value="{{ cat }}">{{ cat }}</option>
@@ -340,11 +430,11 @@
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold">Description</label>
+            <label class="form-label">Description</label>
             <input type="text" name="description" id="editDescription" class="form-control" required/>
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold">Date</label>
+            <label class="form-label">Date</label>
             <input type="date" name="date" id="editDate" class="form-control" required/>
           </div>
         </div>
